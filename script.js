@@ -7,31 +7,30 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
         return;
     }
 
-    const coolLanguages = ["en", "si", "ta", "hi", "ur", "zh", "ja", "la", "ru", "de", "fr", "es", "it", "el", "ar", "he", "pt", "ko", "th"];
+    const coolLanguages = ["EN", "SI", "TA", "HI", "UR", "ZH", "JA", "LA", "RU", "DE", "FR", "ES", "IT", "EL", "AR", "HE", "PT", "KO", "TH"];
 
     if (targetLang === "random") {
         targetLang = coolLanguages[Math.floor(Math.random() * coolLanguages.length)];
     }
 
     try {
-        // Replace with the LibreTranslate API URL
-        const response = await fetch("https://libretranslate.com/translate", {
+        const apiKey = 'YOUR_DEEPL_API_KEY';  // Replace with your DeepL API key
+        const response = await fetch(`https://api-free.deepl.com/v2/translate`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: JSON.stringify({
-                q: inputText,
-                source: "auto",
-                target: targetLang,
-                format: "text",
+            body: new URLSearchParams({
+                auth_key: apiKey,
+                text: inputText,
+                target_lang: targetLang,
             }),
         });
 
         const data = await response.json();
-        
-        if (data.translatedText) {
-            document.getElementById("outputText").textContent = data.translatedText;
+
+        if (data.translations && data.translations[0]) {
+            document.getElementById("outputText").textContent = data.translations[0].text;
         } else {
             document.getElementById("outputText").textContent = "Translation failed.";
         }
