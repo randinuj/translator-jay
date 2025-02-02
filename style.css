@@ -4,15 +4,26 @@
     box-sizing: border-box;
     font-family: 'Product Sans', sans-serif;
 }
-
 body {
+            font-family: 'Product Sans', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 20px; /* Added padding around the body */
+}
+/* body {
     background-color: #f7f7f7;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     flex-direction: column;
-}
+} */
 
 .container {
     background-color: #fff;
