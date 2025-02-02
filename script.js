@@ -14,11 +14,24 @@ document.getElementById("translateBtn").addEventListener("click", async () => {
     }
 
     try {
-        const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(inputText)}&langpair=auto|${targetLang}`);
+        // Replace with the LibreTranslate API URL
+        const response = await fetch("https://libretranslate.com/translate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                q: inputText,
+                source: "auto",
+                target: targetLang,
+                format: "text",
+            }),
+        });
+
         const data = await response.json();
         
-        if (data.responseData.translatedText) {
-            document.getElementById("outputText").textContent = data.responseData.translatedText;
+        if (data.translatedText) {
+            document.getElementById("outputText").textContent = data.translatedText;
         } else {
             document.getElementById("outputText").textContent = "Translation failed.";
         }
