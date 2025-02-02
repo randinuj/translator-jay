@@ -50,24 +50,26 @@
     }
 
     try {
-        // Fetch translation from LibreTranslate API
-        const response = await fetch("https://libretranslate.de/translate", {
+        // Fetch translation from LibreTranslate API with correct URL and key
+        const res = await fetch("https://libretranslate.com/translate", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
             body: JSON.stringify({
-                q: inputText,
-                source: "auto", // Auto-detect language
-                target: targetLang,
-                format: "text"
-            })
+                q: inputText,       // Phrase to be translated
+                source: "auto",     // Auto-detect the language
+                target: targetLang, // Language to translate to
+                format: "text",     // Output format
+                alternatives: 3,    // Optional: number of alternatives for translation
+                api_key: ""         // LibreTranslate doesn’t require a key for free usage, so leave empty
+            }),
+            headers: { 
+                "Content-Type": "application/json" 
+            }
         });
 
-        const data = await response.json();
+        const data = await res.json();
 
-        // Check for successful response
-        if (response.ok && data && data.translatedText) {
+        // Check if translation was successful
+        if (res.ok && data.translatedText) {
             document.getElementById("outputText").textContent = data.translatedText;
         } else {
             document.getElementById("outputText").textContent = "Translation failed.";
