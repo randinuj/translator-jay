@@ -10,8 +10,7 @@
 <body>
     <div class="container">
         <h1 class="title">Translator Jay 🧑‍💻</h1>
-        
-        <div class="form">
+          <div class="form">
             <input type="text" id="inputText" placeholder="Enter your phrase" class="input-text">
             <select id="languageSelect" class="language-select">
                 <option value="en">English</option>
@@ -40,35 +39,6 @@
     </footer>
 
     <script>
-        // Function to detect the language of the input text
-        async function detectLanguage(text) {
-            try {
-                const res = await fetch(
-                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=auto|en`
-                );
-                const data = await res.json();
-                return data.responseData.detectedSourceLanguage || "en"; // Default to English if detection fails
-            } catch (error) {
-                console.error("Language detection failed:", error);
-                return "en"; // Default to English if detection fails
-            }
-        }
-
-        // Function to translate the text
-        async function translateText(text, sourceLang, targetLang) {
-            try {
-                const res = await fetch(
-                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`
-                );
-                const data = await res.json();
-                return data.responseData.translatedText || "Translation failed.";
-            } catch (error) {
-                console.error("Translation failed:", error);
-                return "Translation failed.";
-            }
-        }
-
-        // Translate button click event
         document.getElementById("translateBtn").addEventListener("click", async () => {
             const inputText = document.getElementById("inputText").value;
             const targetLang = document.getElementById("languageSelect").value;
@@ -79,24 +49,38 @@
             }
 
             try {
-                // Step 1: Detect the source language
-                const sourceLang = await detectLanguage(inputText);
-                console.log("Detected Source Language:", sourceLang);
+                // Use a public LibreTranslate instance (no API key required)
+                const res = await fetch("https://libretranslate.de/translate", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        q: inputText,
+                        source: "auto",
+                        target: targetLang,
+                        format: "text"
+                    }),
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    }
+                });
 
-                // Step 2: Translate the text
-                const translatedText = await translateText(inputText, sourceLang, targetLang);
-                document.getElementById("outputText").textContent = translatedText;
+                const data = await res.json();
+                
+                if (data.translatedText) {
+                    document.getElementById("outputText").textContent = data.translatedText;
+                } else {
+                    throw new Error("Translation failed.");
+                }
             } catch (error) {
                 console.error("Error:", error);
-                document.getElementById("outputText").textContent = "Error translating. Please try again.";
+                document.getElementById("outputText").textContent = "Error translating. Try again!";
             }
         });
 
-        // Copy button click event
         document.getElementById("copyBtn").addEventListener("click", () => {
             const text = document.getElementById("outputText").textContent;
             navigator.clipboard.writeText(text).then(() => alert("Copied!"));
         });
     </script>
 </body>
-</html>
+                                             </html>
