@@ -49,6 +49,7 @@
                 return;
             }
 
+            // Fetch translation from LibreTranslate API
             try {
                 const response = await fetch("https://libretranslate.de/translate", {
                     method: "POST",
@@ -57,7 +58,7 @@
                     },
                     body: JSON.stringify({
                         q: inputText,
-                        source: "auto", // Automatically detect the language
+                        source: "auto", // Auto-detect language
                         target: targetLang,
                         format: "text"
                     })
