@@ -1,43 +1,34 @@
-const apiKey = "YOUR_GOOGLE_TRANSLATE_API_KEY"; 
-
-document.getElementById("translateBtn").addEventListener("click", () => {
-    let text = document.getElementById("inputText").value;
+document.getElementById("translateBtn").addEventListener("click", async () => {
+    const inputText = document.getElementById("inputText").value;
     let targetLang = document.getElementById("languageSelect").value;
 
-    if (targetLang === "random") {
-    const languages = [
-        "en", "si", "fr", "de", "es", "zh", "hi", "ta", "ar", "bn", "ru", "ja", "ko", "it", "nl",
-        "pt", "el", "tr", "he", "vi", "pl", "sv", "fi", "no", "da", "cs", "hu", "ro", "id", "th",
-        "fa", "ur", "bg", "ms", "uk", "sr", "hr", "lt", "sk", "sl", "et", "lv", "mt", "is", "ga",
-        "cy", "la"
-    ];
-    targetLang = languages[Math.floor(Math.random() * languages.length)];
+    if (!inputText) {
+        alert("Please enter a phrase!");
+        return;
     }
 
-    translateText(text, targetLang);
+    const coolLanguages = ["en", "si", "ta", "hi", "ur", "zh", "ja", "la", "ru", "de", "fr", "es", "it", "el", "ar", "he", "pt", "ko", "th"];
+
+    if (targetLang === "random") {
+        targetLang = coolLanguages[Math.floor(Math.random() * coolLanguages.length)];
+    }
+
+    try {
+        const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(inputText)}&langpair=auto|${targetLang}`);
+        const data = await response.json();
+        
+        if (data.responseData.translatedText) {
+            document.getElementById("outputText").textContent = data.responseData.translatedText;
+        } else {
+            document.getElementById("outputText").textContent = "Translation failed.";
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("outputText").textContent = "Error translating.";
+    }
 });
 
 document.getElementById("copyBtn").addEventListener("click", () => {
-    let text = document.getElementById("translatedText").innerText;
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    const text = document.getElementById("outputText").textContent;
+    navigator.clipboard.writeText(text).then(() => alert("Copied!"));
 });
-
-async function translateText(text, targetLang) {
-    const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-    
-    const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-            q: text,
-            target: targetLang,
-            format: "text"
-        }),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
-
-    const data = await response.json();
-    document.getElementById("translatedText").innerText = data.data.translations[0].translatedText;
-}
