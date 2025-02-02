@@ -41,46 +41,48 @@
 
     <script>
         document.getElementById("translateBtn").addEventListener("click", async () => {
-            const inputText = document.getElementById("inputText").value;
-            let targetLang = document.getElementById("languageSelect").value;
+    const inputText = document.getElementById("inputText").value;
+    let targetLang = document.getElementById("languageSelect").value;
 
-            if (!inputText) {
-                alert("Please enter a phrase!");
-                return;
-            }
+    if (!inputText) {
+        alert("Please enter a phrase!");
+        return;
+    }
 
-            // Fetch translation from LibreTranslate API
-            try {
-                const response = await fetch("https://libretranslate.de/translate", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        q: inputText,
-                        source: "auto", // Auto-detect language
-                        target: targetLang,
-                        format: "text"
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data && data.translatedText) {
-                    document.getElementById("outputText").textContent = data.translatedText;
-                } else {
-                    document.getElementById("outputText").textContent = "Translation failed.";
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                document.getElementById("outputText").textContent = "Error translating.";
-            }
+    try {
+        // Fetch translation from LibreTranslate API
+        const response = await fetch("https://libretranslate.de/translate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                q: inputText,
+                source: "auto", // Auto-detect language
+                target: targetLang,
+                format: "text"
+            })
         });
 
-        document.getElementById("copyBtn").addEventListener("click", () => {
-            const text = document.getElementById("outputText").textContent;
-            navigator.clipboard.writeText(text).then(() => alert("Copied!"));
-        });
+        const data = await response.json();
+
+        // Check for successful response
+        if (response.ok && data && data.translatedText) {
+            document.getElementById("outputText").textContent = data.translatedText;
+        } else {
+            document.getElementById("outputText").textContent = "Translation failed.";
+            console.error("Translation API failed:", data);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("outputText").textContent = "Error translating.";
+    }
+});
+
+document.getElementById("copyBtn").addEventListener("click", () => {
+    const text = document.getElementById("outputText").textContent;
+    navigator.clipboard.writeText(text).then(() => alert("Copied!"));
+});
     </script>
 </body>
     </html>
